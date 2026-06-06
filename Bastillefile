@@ -23,21 +23,25 @@ RESTART
 # install required templates
 
 INCLUDE https://github.com/bastille-templates/mysql
+INCLUDE https://github.com/bastille-templates/redis
 INCLUDE https://github.com/bastille-templates/nginx
 
 # install required packages
 
-PKG librenms mysql84-server python3 nginx php84-opcache
+PKG nano librenms python3 php84-opcache py311-redis-7.2.0
 
-# enable and start postgre
+# Render File
 
-SYSRC postgresql_enable=YES
-SYSRC postgresql_data="/var/db/postgres/data${PG_VERSION}"
+CP usr /
+CP root /
 
-SERVICE postgresql initdb
+RENDER /usr/local/etc/mysql/my.cnf
+RENDER /usr/local/etc//redis.conf
+RENDER /root/init.sh
 
-SERVICE postgresql start
+# Commmand Jail
 
-#RDR tcp ${PG_PORT} 5432
+CMD sh init.sh && rm init.sh
 
-TAGS database postgresql pg${PG_VERSION}
+RESTART
+

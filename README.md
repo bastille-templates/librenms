@@ -1,7 +1,7 @@
 ## Now apply template to container
 
 ```sh
-bastille create lnms 14.1-RELEASE YourIP-Bastille
+bastille create lnms 14.4-RELEASE YourIP-Bastille
 bastille bootstrap https://github.com/bastille-templates/librenms
 bastille template lnms bastille-templates/librenms \
   --arg MY_VERSION=80 \

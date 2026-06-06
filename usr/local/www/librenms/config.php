@@ -1,0 +1,81 @@
+<?php
+
+## Have a look in resources/definitions/config_definitions.json for examples of settings you can set here. DO NOT EDIT config_definitions.json!
+
+#
+# The FreeBSD package set the following items
+#
+$config['installed_from_package'] = true;
+
+$config['log_dir']     = '/var/log/librenms';
+$config['rrd_dir']     = '/var/db/librenms/rrd';
+
+// This is the user LibreNMS will run as
+// Please ensure this user is created and has the correct permissions to your install
+// The FreeBSD package sets this.
+// It's up to you to install a webserver, such as Apache or Nginx. By default, they
+// run as the www user.
+//
+$config['user'] = 'www';
+
+#
+# The FreeBSD package set the above items
+#
+
+### This should *only* be set if you want to *force* a particular hostname/port
+### It will prevent the web interface being usable from any other hostname
+#$config['base_url']        = "/";
+
+### Enable this to use rrdcached. Be sure rrd_dir is within the rrdcached dir
+### and that your web server has permission to talk to rrdcached.
+#$config['rrdcached']    = "unix:/var/run/rrdcached.sock";
+
+### Default community
+#$config['snmp']['community'] = array('public');
+
+### Authentication Model
+#$config['auth_mechanism'] = "mysql"; # default, other options: ldap, http-auth
+#$config['http_auth_guest'] = "guest"; # remember to configure this user if you use http-auth
+
+### List of RFC1918 networks to allow scanning-based discovery
+#$config['nets'][] = "10.0.0.0/8";
+#$config['nets'][] = "172.16.0.0/12";
+#$config['nets'][] = "192.168.0.0/16";
+
+# Uncomment the next line to disable daily updates
+# FreeBSD package uncommented this line for you.
+$config['update'] = 0;
+
+# Number in days of how long to keep old rrd files. 0 disables this feature
+#$config['rrd_purge'] = 0;
+
+# Uncomment to submit callback stats via proxy
+#$config['callback_proxy'] = "hostname:port";
+
+# Set default port association mode for new devices (default: ifIndex)
+#$config['default_port_association_mode'] = 'ifIndex';
+
+# Enable the in-built billing extension
+#$config['enable_billing'] = 1;
+
+# Enable the in-built services support (Nagios plugins)
+#$config['show_services'] = 1;
+
+# These paths are supplied by the FreeBSD port and correct those found in
+# the code.
+
+$config['snmpwalk']       = '/usr/local/bin/snmpwalk';
+$config['snmpget']        = '/usr/local/bin/snmpget';
+$config['snmpbulkwalk']   = '/usr/local/bin/snmpbulkwalk';
+$config['snmptranslate']  = '/usr/local/bin/snmptranslate';
+
+$config['ping']           = '/sbin/ping';
+$config['mtr']            = '/usr/local/bin/mtr';
+$config['nmap']           = '/usr/local/bin/nmap';
+
+$config['nagios_plugins'] = '/usr/local/libexec/nagios';
+$config['ipmitool']       = '/usr/local/bin/ipmitool';
+$config['virsh']          = '/usr/local/bin/virsh';
+$config['dot']            = '/usr/local/bin/dot';
+$config['sfdp']           = '/usr/local/bin/sfdp';
+$config['nfdump']         = '/usr/local/bin/nfdump';
