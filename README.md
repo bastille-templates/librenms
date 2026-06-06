@@ -1,10 +1,16 @@
-# unitlara
-To run apps based on the Laravel framework using Nginx Unit
-
 ## Now apply template to container
+
 ```sh
-bastille create laravel 14.1-RELEASE YourIP-Bastille
-bastille bootstrap https://github.com/bastille-templates/unitlara; bastille template laravel bastille-templates/unitlara
+bastille create lnms 14.1-RELEASE YourIP-Bastille
+bastille bootstrap https://github.com/bastille-templates/librenms
+bastille template lnms bastille-templates/librenms \
+  --arg MY_VERSION=80 \
+  --arg MY_PORT=3306 \
+  --arg CPULIMIT=0,1 \
+  --arg MEMLIMIT=4096M \
+  --arg DISKLIMIT=32G
 ```
+
 ## License
+
 This project is licensed under the BSD-3-Clause license.

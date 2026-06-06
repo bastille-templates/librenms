@@ -1,23 +1,43 @@
-ARG php_v=82
+# --- Variable ---
 
-# install required famp
-INCLUDE https://github.com/bastille-templates/php
+ARG CPULIMIT="0,1"
+ARG MEMLIMIT="2048M"
+ARG DISKLIMIT="4G"
 
-PKG unit-php${php_v} php${php_v}-ctype php${php_v}-curL php${php_v}-dom php${php_v}-fileinfo php${php_v}-filter php${php_v}-mbstring php${php_v}-pdo php${php_v}-session php${php_v}-tokenizer php${php_v}-xml php${php_v}-xmlwriter php${php_v}-composer php${php_v}-mysqli php${php_v}-pdo_mysql php${php_v}-sqlite3 php${php_v}-pdo_sqlite
+ARG PG_VERSION="16"
+ARG PG_PORT="5432"
 
-# Create Project
-CMD cd /root; composer create-project laravel/laravel project
+# --- Limit resource ---
 
-# copy files
-CP root/bootstrap.sh /root/
-CP root/config.json /root/
+LIMITS cpu ${CPULIMIT}
+LIMITS memoryuse ${MEMLIMIT}
+LIMITS datasize 20G ${DISKLIMIT}
 
-CMD cd /root; sh bootstrap.sh
+# --- Config ---
 
-SERVICE unitd enable
+CONFIG set allow.sysvipc 1
+CONFIG set sysvshm new
+CONFIG set sysvsem new
+RESTART
 
-SERVICE php_fpm restart
-SERVICE unitd start
+# install required templates
 
-RDR tcp 80 80
-RDR tcp 443 443
+INCLUDE https://github.com/bastille-templates/mysql
+INCLUDE https://github.com/bastille-templates/nginx
+
+# install required packages
+
+PKG librenms mysql84-server python3 nginx php84-opcache
+
+# enable and start postgre
+
+SYSRC postgresql_enable=YES
+SYSRC postgresql_data="/var/db/postgres/data${PG_VERSION}"
+
+SERVICE postgresql initdb
+
+SERVICE postgresql start
+
+#RDR tcp ${PG_PORT} 5432
+
+TAGS database postgresql pg${PG_VERSION}
