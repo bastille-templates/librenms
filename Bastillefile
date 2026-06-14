@@ -14,7 +14,7 @@ LIMITS memoryuse ${MEMLIMIT}
 LIMITS datasize 20G ${DISKLIMIT}
 
 # --- Config ---
-
+CONFIG set allow.raw_sockets 1
 CONFIG set allow.sysvipc 1
 CONFIG set sysvshm new
 CONFIG set sysvsem new

@@ -1,23 +1,39 @@
 #!/bin/bash
 # This script initializes the MySQL database for LibreNMS.
 # Generate a random password for the LibreNMS database user.
-password=$(openssl rand -base64 12)
-mysql -u root -e "CREATE DATABASE librenms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-mysql -u root -e "CREATE USER 'librenms'@'localhost' IDENTIFIED BY '$password';"
-mysql -u root -e "GRANT ALL PRIVILEGES ON librenms.* TO 'librenms'@'localhost';"
+MYDB_USER="librenms"
+MYDB_PASS=$(openssl rand -base64 12)
+MYDB="librenms"
+mysql -u root -e "CREATE DATABASE $MYDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -e "CREATE USER '$MYDB_USER'@'localhost' IDENTIFIED BY '$MYDB_PASS';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON $MYDB.* TO '$MYDB_USER'@'localhost';"
 mysql -u root -e "FLUSH PRIVILEGES;"
 
 # Store the generated password in a file for later use
-echo "LibreNMS database user password: $password" > /root/librenms.credentials
+cat > /root/librenms.credentials <<'EOF'
+LibreNMS Database Credentials
+--------------------------
+Username: $MYDB_USER
+Password: $MYDB_PASS
+Database: $MYDB
+EOF
 
 # Configure Redis for LibreNMS
-redis_conf="/usr/local/etc/redis.conf"
-if [ -f "$redis_conf" ]; then
+REDIS_PASS=$(openssl rand -base64 12)
+REDIS_CONF="/usr/local/etc/redis.conf"
+
+{
+  echo "LibreNMS Credentials"
+  echo "Username: ${APP_USER}"
+  echo "Password: ${APP_PASSWORD}"
+} >> /root/librenms.credentials
+
+if [ -f "$REDIS_CONF" ]; then
   sed -i.bak \
     -e 's#^bind .*#bind 127.0.0.1 ::1#' \
     -e 's#^protected-mode .*#protected-mode yes#' \
-    -e 's#^# requirepass .*#requirepass librenms#' \
-    "$redis_conf"
+    -e 's#^# requirepass .*#requirepass $REDIS_PASS#' \
+    "$REDIS_CONF"
 fi
 
 # Configure PHP-FPM to listen on a socket for LibreNMS.
@@ -65,8 +81,8 @@ if [ -f "$lnms_env" ]; then
   sed -i.bak \
     -e "s#^DB_HOST=.*#DB_HOST=localhost#" \
     -e "s#^DB_DATABASE=.*#DB_DATABASE=librenms#" \
-    -e "s#^DB_USERNAME=.*#DB_USERNAME=librenms#" \
-    -e "s#^DB_PASSWORD=.*#DB_PASSWORD=$password#" \
+    -e "s#^DB_USERNAME=.*#DB_USERNAME=$MYDB_USER#" \
+    -e "s#^DB_PASSWORD=.*#DB_PASSWORD=$MYDB_PASS#" \
     -e "s#^NODE_ID=.*#NODE_ID=$node_id#" \
     "$lnms_env"
 fi
