@@ -21,7 +21,7 @@ CONFIG set sysvsem new
 RESTART
 
 # install required templates
-
+INCLUDE https://github.com/bastille-templates/base
 INCLUDE https://github.com/bastille-templates/mysql
 INCLUDE https://github.com/bastille-templates/redis
 INCLUDE https://github.com/bastille-templates/nginx
