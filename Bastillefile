@@ -21,14 +21,13 @@ CONFIG set sysvsem new
 RESTART
 
 # install required templates
-INCLUDE https://github.com/bastille-templates/base
 INCLUDE https://github.com/bastille-templates/mysql
 INCLUDE https://github.com/bastille-templates/redis
 INCLUDE https://github.com/bastille-templates/nginx
 
 # install required packages
 
-PKG nano librenms python3 php84-opcache py311-redis-7.2.0
+PKG bash ca_root_nss nano librenms python3 php84-opcache py311-redis-7.2.0
 
 # Render File
 
@@ -45,3 +44,6 @@ CMD sh init.sh && rm init.sh
 
 RESTART
 
+#RDR tcp ${PG_PORT} 5432
+
+TAGS monitoring-tool
