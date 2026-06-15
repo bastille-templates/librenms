@@ -1,18 +1,3 @@
-# --- Variable ---
-
-ARG CPULIMIT="0,1"
-ARG MEMLIMIT="2048M"
-ARG DISKLIMIT="4G"
-
-ARG PG_VERSION="16"
-ARG PG_PORT="5432"
-
-# --- Limit resource ---
-
-LIMITS cpu ${CPULIMIT}
-LIMITS memoryuse ${MEMLIMIT}
-LIMITS datasize 20G ${DISKLIMIT}
-
 # --- Config ---
 CONFIG set allow.raw_sockets 1
 CONFIG set allow.sysvipc 1
@@ -21,29 +6,29 @@ CONFIG set sysvsem new
 RESTART
 
 # install required templates
-INCLUDE https://github.com/bastille-templates/mysql
-INCLUDE https://github.com/bastille-templates/redis
-INCLUDE https://github.com/bastille-templates/nginx
+INCLUDE https://github.com/bastille-templates/base
+
+PKG bash ca_root_nss nano
+
+CMD chsh -s /usr/local/bin/bash root
 
 # install required packages
-CMD sed -e "s|quarterly|latest|g" -i.bak /etc/pkg/FreeBSD.conf
-PKG bash ca_root_nss nano librenms python3 php84-opcache py311-redis-7.2.0
+PKG nginx librenms python3 php84-opcache mysql80-server redis74 py311-redis-7.4.0
 
 # Render File
-
+CP etc /
 CP usr /
 CP root /
 
+RENDER /etc/hosts
 RENDER /usr/local/etc/mysql/my.cnf
-RENDER /usr/local/etc//redis.conf
+RENDER /usr/local/etc/redis.conf
 RENDER /root/init.sh
 
 # Commmand Jail
+CMD bash init.sh && rm init.sh
 
-CMD sh init.sh && rm init.sh
-
-RESTART
-
-#RDR tcp ${PG_PORT} 5432
+RDR tcp 80 80
+RDR tcp 443 443
 
 TAGS monitoring-tool
